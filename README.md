@@ -1,2 +1,2 @@
-# ¾Ë°í¸®Áò ¹®Á¦ ¿¬½À Repo.
-°¢ .cppÀÇ ÀÌ¸§Àº www.acmicpc.netÀÇ ¹®Á¦¹øÈ£ÀÔ´Ï´Ù.
+# ì•Œê³ ë¦¬ì¦˜ ë¬¸ì œ ì—°ìŠµ Repo.
+ê° .cppì˜ ì´ë¦„ì€ www.acmicpc.net ì˜ ë¬¸ì œë²ˆí˜¸ìž…ë‹ˆë‹¤.
