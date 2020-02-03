@@ -8,10 +8,6 @@
 #define point pair<int, int>
 using namespace std;
 
-point operator+(const point& A, const point& B) {
-    return point(A.first + B.first, A.second + B.second);
-}
-
 int bfs(vector<vector<int>>& people, const int& from, const int& to) {
     queue<int> q;
     vector<int> visit(people.size());
