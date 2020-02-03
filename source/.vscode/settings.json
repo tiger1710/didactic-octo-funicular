@@ -21,6 +21,12 @@
         "numeric": "cpp",
         "initializer_list": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "atomic": "cpp",
+        "fstream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "system_error": "cpp",
+        "tuple": "cpp"
     }
 }
