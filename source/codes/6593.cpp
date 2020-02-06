@@ -24,74 +24,97 @@ public:
     }
 };
 
-void input(vector<vector<vector<char>>>& building, Point p[2], const int& L, const int& R, const int& C) {
-    cin.ignore();
-    for (int l = 0; l < L; l++) {
-        for (int r = 0; r < R; r++) {
-            for (int c = 0; c < C; c++) {
-                c = cin.get();
-                switch (c) {
-                case 'S':
-                    p[0].set(l, r, c);
-                    break;
-                case 'E':
-                    p[1].set(l, r, c);
-                    break;
-                default:
-                    break;
-                }
-            }
-            cin.ignore();
-        }
-        cin.ignore();
-    }
-}
-
 int& visited(vector<vector<vector<int>>>& visit, const Point& p) {
     return visit[p.l][p.r][p.c];
+}
+
+char& block(vector<vector<vector<char>>>& building, const Point& p) {
+    return building[p.l][p.r][p.c];
 }
 
 bool isSafe(const Point& p) {
     return 0 <= p.l and p.l < L and 0 <= p.r and p.r < R and 0 <= p.c and p.c < C;
 }
 
-void bfs(vector<vector<vector<char>>>& building, Point& start, Point& end) {
+int bfs(vector<vector<vector<char>>>& building, Point& start, Point& end) {
     static Point diff[6] = { Point(0, -1, 0), Point(0, 1, 0), Point(0, 0, -1),
                             Point(0, 0, 1), Point(-1, 0, 0), Point(1, 0, 0) };
 
     vector<vector<vector<int>>> visit(L, vector<vector<int>>(R, vector<int>(C, 0)));
     queue<Point> q;
     q.push(start);
-    visited(visit, start);
+    visited(visit, start) = 1;;
 
     while (not q.empty()) {
         Point cur = q.front(); q.pop();
+        if (block(building, cur) == 'E') return visited(visit, cur) - 1;
 
         for (Point& d : diff) {
             Point next = cur + d;
 
-            if (isSafe(next) and not visited(visit, next)) {
+            if (isSafe(next) and (block(building, next) not_eq '#') and (not visited(visit, next))) {
                 visited(visit, next) = visited(visit, cur) + 1;
                 q.push(next);
             }
         }
 
-        q.pop();
     }
     
+    return 0;
+}
+
+int input(vector<vector<vector<char>>>& building, Point p[2]) {
+    cin >> L >> R >> C;
+    cin.ignore();
+    if (L == 0 and R == 0 and C == 0) return 1;
+
+    building = vector<vector<vector<char>>>(L, vector<vector<char>>(R, vector<char>(C)));
+
+    for (int l = 0; l < L; l++) {
+        for (int r = 0; r < R; r++) {
+            for (int c = 0; c < C; c++) {
+                char ch = block(building, Point(l, r, c)) = cin.get();
+                if (ch == 'S') p[0].set(l, r, c);
+                if (ch == 'E') p[1].set(l, r, c);
+            }
+            cin.ignore();
+        }
+        cin.get();
+    }
+    return 0;
+}
+
+void output(vector<vector<vector<char>>>& building) {
+    for (auto& l : building) {
+        for (auto& r : l) {
+            for (auto& c : r) {
+                cout << c;
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
 }
 
 int main(void) {
     ios_base::sync_with_stdio(false);
 
     while (true) {
-        cin >> L >> R >> C;
-        if (L == 0 and R == 0 and C == 0) break;
 
-        vector<vector<vector<char>>> building(L, vector<vector<char>>(R, vector<char>(C)));
+        vector<vector<vector<char>>> building;
         Point p[2]; //start, end
-        input(building, p, L, R, C);
+        if (input(building, p)) break;
 
+        int minutes =  bfs(building, p[0], p[1]);
+
+        switch (minutes) {
+        case 0:
+            cout << "Trapped!" << endl;
+            break;
+        default:
+            cout << "Escaped in " << minutes << " minute(s)." << endl;
+            break;
+        }
         
 
         
