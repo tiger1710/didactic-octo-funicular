@@ -5,19 +5,23 @@
 #include <limits>
 #include <string>
 #define endl '\n'
-#define point pair<int, int>
+#define point pair<int, int>//first:distance, second:point
 using namespace std;
+
+point operator+(const point& p1, const point& p2) {
+    return point(p1.first + p2.first, p1.second + p2.second);
+}
 
 class HS {
 private:
-    const int MAX = 100001;
+    const int MAX = 100005;
     int N, K;
-    vector<int> visit;
+    vector<bool> visit;
+    vector<int> dist;
 public:
     HS() {
         this->input();
-        if (this->N not_eq this->K) this->clac_bfs();
-        else visit[this->K] = 1;
+        this->clac_bfs();
         this->output();
     }
 
@@ -27,34 +31,38 @@ public:
 
     void input() {
         cin >> this->N >> this->K;
-        this->visit = vector<int>(MAX);
+        this->visit = vector<bool>(MAX);
+        this->dist = vector<int>(MAX, MAX);
     }
     void clac_bfs() {
-        queue<int> q;
-        q.push(this->N);
-        this->visit[this->N] = 1;
+        priority_queue<point, vector<point>, greater<point>> pq;
+        pq.push(point(0, this->N));
+        dist[this->N] = 0;
 
-        while (not q.empty()) {
-            int cur = q.front(); q.pop();
-            if (cur == this->K) break;
+        while (not pq.empty()) {
+            point cur;
 
-            if (isSafe(cur + cur) and not visit[cur + cur]) {
-                q.push(cur + cur);
-                this->visit[cur + cur] = visit[cur];
-            }
-            if (isSafe(cur + 1) and not visit[cur + 1]) {
-                q.push(cur + 1);
-                this->visit[cur + 1] = visit[cur] + 1;
-            }
-            if (isSafe(cur - 1) and not visit[cur - 1]) {
-                q.push(cur - 1);
-                this->visit[cur - 1] = visit[cur] + 1;
-            }
+            do {
+                cur = pq.top();
+                pq.pop();
+            } while (not pq.empty() and visit[cur.second]);
+            if (visit[cur.second]) break;
+        
+            visit[cur.second] = true;
+            if (cur.second == this->K) return;
 
+            const point diff[3] = { point(0, cur.second), point(1, 1), point(1, -1) };
+            for (auto& d : diff) {
+                point next = cur + d;
+                if  (isSafe(next.second) and next.first < dist[next.second]) {
+                    dist[next.second] = next.first;
+                    pq.push(next);
+                }
+            }
         }
     }
     void output() {
-        cout << this->visit[this->K] - 1;
+        cout << this->dist[this->K];
     }
 
 };
