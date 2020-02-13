@@ -12,35 +12,35 @@ private:
     vector<int> previous;
 public:
     void solve(void) {
-        this->input();
-        this->calc_bfs();
-        cout << this->visited[this->K] - 1 << endl; 
-        this->output(this->K);
+        input();
+        calc_bfs();
+        cout << visited[K] - 1 << endl; 
+        output(K);
     }
 
     bool isSafe(const int& p) {
-        return 0 <= p and p < this->MAX;
+        return 0 <= p and p < MAX;
     }
 
     void input(void) {
-        cin >> this->N >> this->K;
-        visited = previous = vector<int>(this->MAX);
-        previous[this->N] = -1;
+        cin >> N >> K;
+        visited = previous = vector<int>(MAX);
+        previous[N] = -1;
     }
     void calc_bfs(void) {
         queue<int> q;
-        q.push(this->N);
-        visited[this->N] = 1;
+        q.push(N);
+        visited[N] = 1;
 
         while (not q.empty()) {
             int cur = q.front(); q.pop();
-            if (cur == this->K) break;     
+            if (cur == K) break;     
             for (const int& d : { cur, 1, -1 } ) {
                 int next = cur + d;
-                if (this->isSafe(next) and not visited[next]) {
+                if (isSafe(next) and not visited[next]) {
                     q.push(next);
-                    this->visited[next] = this->visited[cur] + 1;
-                    this->previous[next] = cur;
+                    visited[next] = visited[cur] + 1;
+                    previous[next] = cur;
                 }
             }
         }

@@ -43,14 +43,14 @@ int main(void) {
 }
 
 void Box::input() {
-    cin >> this->M >> this->N;
-    this->box = vector<vector<int>>(N, vector<int>(M));
-    this->visit = vector<vector<bool>>(N, vector<bool>(M));
-    for (int r = 0; r < this->N; r++) {
-        for (int c = 0; c < this->M; c++) {
-            cin >> this->box[r][c];
-            if (this->box[r][c] == this->ripe) {
-                this->start.push_back(point(r, c));
+    cin >> M >> N;
+    box = vector<vector<int>>(N, vector<int>(M));
+    visit = vector<vector<bool>>(N, vector<bool>(M));
+    for (int r = 0; r < N; r++) {
+        for (int c = 0; c < M; c++) {
+            cin >> box[r][c];
+            if (box[r][c] == ripe) {
+                start.push_back(point(r, c));
             }
         }
     }
@@ -58,17 +58,17 @@ void Box::input() {
 
 void Box::calc_bfs() {
     queue<point> q;
-    for (point& p : this->start) {//put all riped tomato
+    for (point& p : start) {//put all riped tomato
         q.push(p);
-        this->visited(p) = true;
+        visited(p) = true;
     }
 
     while (not q.empty()) {
         point cur = q.front(); q.pop();
 
-        for (const point& d : this->diff) {
+        for (const point& d : diff) {
             point next = cur + d;
-            if (this->isSafe(next) and this->isAdjacent(next) and (not visited(next))) {
+            if (isSafe(next) and isAdjacent(next) and (not visited(next))) {
                 q.push(next);
                 boxRef(next) = boxRef(cur) + 1;
                 visited(next) = true;;
@@ -79,7 +79,7 @@ void Box::calc_bfs() {
 
 int Box::result() {
     int chk = 0;
-    for (auto& r : this->box) {
+    for (auto& r : box) {
         for (auto& c : r) {
             if (c == raw) return -1;
             chk = chk < c ? c : chk;
@@ -89,11 +89,11 @@ int Box::result() {
 }
 
 int& Box::boxRef(const point& p) {
-    return this->box[p.first][p.second];
+    return box[p.first][p.second];
 }
 
 int Box::isSafe(const point& p) {
-    return 0 <= p.first and p.first < this->N and 0 <= p.second and p.second < this->M;
+    return 0 <= p.first and p.first < N and 0 <= p.second and p.second < M;
 }
 
 vector<bool>::reference Box::visited(const point& p) {
@@ -101,7 +101,7 @@ vector<bool>::reference Box::visited(const point& p) {
 }
 
 int Box::isAdjacent(const point& p) {
-    return this->box[p.first][p.second] not_eq this->empty;
+    return box[p.first][p.second] not_eq empty;
 }
 
 point operator+(const point& p1, const point& p2) {

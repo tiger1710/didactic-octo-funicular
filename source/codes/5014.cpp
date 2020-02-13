@@ -17,9 +17,9 @@ public:
     void calc_bfs();
     void output();
     Building() {
-        this->input();
-        this->calc_bfs();
-        this->output();
+        input();
+        calc_bfs();
+        output();
     }
 
     int isSafe(const int& p);
@@ -34,21 +34,21 @@ int main(void) {
 }
 
 void Building::input() {
-    cin >> this->F >> this->S >> this->G >> this->U >> this->D;
-    this->visit = vector<int>(this->F);
-    this->S--; this->G--;
+    cin >> F >> S >> G >> U >> D;
+    visit = vector<int>(F);
+    S--; G--;
 }
 
 int Building::isSafe(const int& p) {
-    return 0 <= p and p < this->F;
+    return 0 <= p and p < F;
 }
 
 int& Building::visited(const int& p) {
-    return this->visit[p];
+    return visit[p];
 }
 
 void Building::output() {
-    int result = visited(this->G);
+    int result = visited(G);
     
     switch (result) {
     case 0:
@@ -61,10 +61,10 @@ void Building::output() {
 }
 
 void Building::calc_bfs() {
-    static const int diff[2] = { this->U, -this->D };
+    static const int diff[2] = { U, -D };
     queue<int> q;
-    q.push(this->S);
-    visited(this->S) = 1;
+    q.push(S);
+    visited(S) = 1;
 
     while (not q.empty()) {
         int cur = q.front(); q.pop();

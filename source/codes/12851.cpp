@@ -16,10 +16,10 @@ private:
     vector<int> visit;
 public:
     HS() {
-        this->input();
-        if (this->N not_eq this->K) this->calc_bfs();
-        else this->cnt++;
-        this->output();
+        input();
+        if (N not_eq K) calc_bfs();
+        else cnt++;
+        output();
     }
 
     void input();
@@ -39,18 +39,18 @@ int main(void) {
 }
 
 void HS::input() {
-    cin >> this->N >> this->K;
-    this->visit = vector<int>(this->MAX);
+    cin >> N >> K;
+    visit = vector<int>(MAX);
 }
 
 void HS::output() {
-    cout << this->visited(this->K) << endl;
-    cout << this->cnt << endl;
+    cout << visited(K) << endl;
+    cout << cnt << endl;
 }
 
 void HS::calc_bfs() {
     queue<int> q;
-    q.push(this->N);
+    q.push(N);
 
     int sec = 0;
     bool chk = false;
@@ -64,17 +64,17 @@ void HS::calc_bfs() {
 
             for (const int& d : diff) {
                 int next = cur + d;
-                if (next == this->K) {
+                if (next == K) {
                     cnt++;
                     chk = true;
                 }
-                if (this->isSafe(next) and (not this->visited(next))) {
+                if (isSafe(next) and (not visited(next))) {
                     q.push(next);
                 }
             }
         }
         if (chk) {
-            visited(this->K) = sec;
+            visited(K) = sec;
             break;
         }
     }
@@ -82,9 +82,9 @@ void HS::calc_bfs() {
 
 
 bool HS::isSafe(const int& p) {
-    return 0 <= p and p < this->MAX;
+    return 0 <= p and p < MAX;
 }
 
 int& HS::visited(const int& p) {
-    return this->visit[p];
+    return visit[p];
 }

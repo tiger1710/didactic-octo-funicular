@@ -20,9 +20,9 @@ private:
     vector<int> dist;
 public:
     HS() {
-        this->input();
-        this->clac_bfs();
-        this->output();
+        input();
+        clac_bfs();
+        output();
     }
 
     bool isSafe(const int& p) {
@@ -30,14 +30,14 @@ public:
     }
 
     void input() {
-        cin >> this->N >> this->K;
-        this->visit = vector<bool>(MAX);
-        this->dist = vector<int>(MAX, MAX);
+        cin >> N >> K;
+        visit = vector<bool>(MAX);
+        dist = vector<int>(MAX, MAX);
     }
     void clac_bfs() {
         priority_queue<point, vector<point>, greater<point>> pq;
-        pq.push(point(0, this->N));
-        dist[this->N] = 0;
+        pq.push(point(0, N));
+        dist[N] = 0;
 
         while (not pq.empty()) {
             point cur;
@@ -49,7 +49,7 @@ public:
             if (visit[cur.second]) break;
         
             visit[cur.second] = true;
-            if (cur.second == this->K) return;
+            if (cur.second == K) return;
 
             const point diff[3] = { point(0, cur.second), point(1, 1), point(1, -1) };
             for (auto& d : diff) {
@@ -62,7 +62,7 @@ public:
         }
     }
     void output() {
-        cout << this->dist[this->K];
+        cout << dist[K];
     }
 
 };

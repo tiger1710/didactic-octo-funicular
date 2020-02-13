@@ -5,8 +5,8 @@
 #include <limits>
 #include <string>
 #define endl '\n'
-#define point pair<int, int>
 using namespace std;
+typedef pair<int, int> point;
 
 int main(void) {
     ios_base::sync_with_stdio(false);
