@@ -21,6 +21,8 @@ private:
     int R, C;
     vector<vector<char>> backyard;
     vector<vector<bool>> visit;
+    int o = 0;//sheep
+    int v = 0;//wolf
 
     bool isSafe(const point& p) {
         return (unsigned)(p.first) < R and (unsigned)(p.second) < C;
@@ -30,6 +32,12 @@ private:
     }
     char pos(const point& p) {
         return backyard[p.first][p.second];
+    }
+    bool condition(const point& p) {
+        return isSafe(p) and (not visited(p)) and (pos(p) not_eq fence);
+    }
+    void cnt(const sheep_and_wolf& n) {
+        n.first > n.second ? (o += n.first) : (v += n.second);
     }
 
     void dfs(const point& cur, sheep_and_wolf& cnt) {
@@ -45,9 +53,7 @@ private:
 
         for (const point& d : diff) {
             const point next(cur + d);
-            if (isSafe(next) and
-                not visited(next) and
-                pos(next) not_eq fence) {
+            if (condition(next)) {
                 dfs(next, cnt);
             }
         }
@@ -62,6 +68,7 @@ private:
         for (auto& row : backyard) {
             for (auto& col : row)
                 cin >> col;
+
             cin.ignore();
         }
     }
@@ -69,17 +76,32 @@ private:
     void calc(void) {
         for (int row = 0; row < R; row++) {
             for (int col = 0; col < C; col++) {
-                if (not visited(col))
+                if (condition(point(row, col))) {
+                    sheep_and_wolf n(0, 0);
+                    dfs(point(row, col), n);
+                    cnt(n);
+                }
             }
         }
     }
 
-public:
+    void output(void) {
+        cout << o << ' ' << v;
+    }
 
+public:
+    void solve(void) {
+        input();
+        calc();
+        output();
+    }
 };
 
 int main(void) {
     ios_base::sync_with_stdio(false);
+
+    Backyard yard;
+    yard.solve();
 
     return 0;
 }
