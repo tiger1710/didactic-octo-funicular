@@ -10,71 +10,85 @@ typedef pair<int, string> point;
 
 class DSLR {
 private:
-    int digit[4];
     int start;
     int target;
-    bool visited[10000];
+    vector<string> visited;
 
-    
+    string (DSLR::*fpStr[4])(const string& cur) = { &DSLR::D, &DSLR::S, &DSLR::L, &DSLR::R };
+    int (DSLR::*fpInt[4])(const int& cur) = { &DSLR::D, &DSLR::S, &DSLR::L, &DSLR::R };
 
-    void conversion(int num) {
-        for (int i = 3; i >= 0; i++) {
-            digit[i] = num % 10;
-            num /= 10;
-        }
+    int D(const int& cur) {
+        return ((cur << 1) % 10000);
     }
-    int conversion(void) {
-        return ((digit[0]*10 + digit[1])*10 + digit[2])*10 + digit[3];
+    int S(const int& cur) {
+        return (cur - 1) < 0 ? 9999 : (cur - 1);
     }
-    void moveLeft(void) {
-        int t = digit[0];
-        digit[0] = digit[1]; digit[1] = digit[2]; digit[2] = digit[3];
-        digit[3] = t;
+    int L(const int& cur) {
+        int carry = cur / 1000;
+        return (cur % 1000) * 10 + carry;
     }
-    void moveRight(void) {
-        int t = digit[3];
-        digit[3] = digit[2]; digit[2] = digit[1]; digit[1] = digit[0];
-        digit[0] = t;
+    int R(const int& cur) {
+        int borrow = cur % 10;
+        return (cur / 10) + borrow * 1000;
     }
 
-    int D(const int& n) {
-        return (n + n) % 10000;
+    string D(const string& cur) {
+        return cur + "D";
     }
-    int S(const int& n) {
-        return (n - 1) < 0 ? 9999 : (n - 1);
+    string S(const string& cur) {
+        return cur + "S";
     }
-    int L(const int& n) {
-        conversion(n);
-        moveLeft();
-        return conversion();
+    string L(const string& cur) {
+        return cur + "L";
     }
-    int R(const int& n) {
-        conversion(n);
-        moveRight();
-        return conversion();
+    string R(const string& cur) {
+        return cur + "R";
     }
 
     void input(void) {
         cin >> start >> target;
+        visited = vector<string>(10000, "");
     }
     void calc(void) {
-        queue<point> q;
-        q.push(point(start, ""));
-        visited[start] = true;
+        queue<int> q;//point 형식의 자료를 넣고빼면서 연산하니 시간초과...
+        q.push(start);
+        visited[start] = "\r";//방문체크를 string으로 함..
 
         while (not q.empty()) {
-            point cur = q.front(); q.pop();
+            int cur(q.front()); q.pop();
+            if (cur == target) break;
 
+            for (int i = 0; i < 4; i++) {
+                int next((this->*fpInt[i])(cur));
+                if (visited[next] == "") {
+                    visited[next] = (this->*fpStr[i])(visited[cur]);
+                    q.push(next);
+                }
+            }
         }
+    }
+    void output(void) {
+        cout << visited[target] << endl;
     }
 
 
 public:
+    void solve(void) {
+        input();
+        calc();
+        output();
+    }
     
 };
 
 int main(void) {
     ios_base::sync_with_stdio(false);
+
+    int T; cin >> T;
+    for (int i = 0; i < T; i++) {
+        DSLR dslr;
+        dslr.solve();
+    }
 
     return 0;
 }
