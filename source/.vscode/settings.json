@@ -27,7 +27,8 @@
         "sstream": "cpp",
         "streambuf": "cpp",
         "system_error": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "hash_map": "cpp"
     },
 
     "editor.tokenColorCustomizations": {
