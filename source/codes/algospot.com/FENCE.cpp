@@ -8,7 +8,7 @@ private:
     int N;
     vector<int> height;
 
-    int ans;
+    int ans = 0;
 
     int seg(const int& left, const int& right) {
         if (left == right - 1) return height[left];
@@ -21,10 +21,10 @@ private:
         ret = max(ret, subHeight << 1);
 
         while (left <= low or high < right) {
-            if (height[low] < height[high]) subHeight = min(subHeight, height[high++]);
+            if ((high < right) and (low < left or height[low] < height[high])) subHeight = min(subHeight, height[high++]);
             else subHeight = min(subHeight, height[low--]);
 
-            ret = max(ret, (high - low) * subHeight);
+            ret = max(ret, (high - low - 1) * subHeight);
         }
 
         return ret;
@@ -45,7 +45,7 @@ public:
     void solve(void) {
         input();
         calc();
-        solve();
+        output();
     }
 };
 
