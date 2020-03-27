@@ -3,7 +3,7 @@
 #define endl '\n'
 using namespace std;
 
-class FENCE {
+class Fence {
 private:
     int N;
     vector<int> height;
@@ -52,7 +52,7 @@ public:
 int main(void) {
     ios_base::sync_with_stdio(false); cin.tie(NULL);
     int C; cin >> C;
-    FENCE f;
+    Fence f;
     for (int testCase = 0; testCase < C; testCase++) {
         f.solve();
     }

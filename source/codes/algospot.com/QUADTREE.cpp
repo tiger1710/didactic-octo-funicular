@@ -4,7 +4,7 @@
 #define endl '\n'
 using namespace std;
 
-class QUADTREE {
+class QuadTree {
 private:
     string ans;
     
@@ -42,7 +42,7 @@ public:
 int main(void) {
     ios_base::sync_with_stdio(false); cin.tie(NULL);
     int C; cin >> C;
-    QUADTREE qt;
+    QuadTree qt;
     for (int testCase = 0; testCase < C; testCase++) {
         qt.solve();
     }

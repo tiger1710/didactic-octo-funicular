@@ -4,7 +4,7 @@
 #define endl '\n'
 using namespace std;
 
-class CLOCKSYNC {
+class ClockSync {
 private:
     int INF = 987654321, ans = INF;
     vector<vector<short>> linked = vector<vector<short>>(10);
@@ -38,7 +38,7 @@ private:
         cout << ((ans not_eq INF) ? (ans) : (-1)) << endl;
     }
 public:
-    CLOCKSYNC(void) {
+    ClockSync(void) {
         linked[0].insert(linked[0].end(), { 0, 1, 2 });
         linked[1].insert(linked[1].end(), { 3, 7, 9, 11 });
         linked[2].insert(linked[2].end(), { 4, 10, 14, 15 });
@@ -60,7 +60,7 @@ public:
 int main(void) {
     ios_base::sync_with_stdio(false); cin.tie(NULL);
     int C; cin >> C;
-    CLOCKSYNC cs;
+    ClockSync cs;
     for (int testCase = 0; testCase < C; testCase++) {
         cs.solve();
     }
