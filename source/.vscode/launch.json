@@ -1,7 +1,7 @@
 {
-    // IntelliSense¸¦ »ç¿ëÇÏ¿© °¡´ÉÇÑ Æ¯¼º¿¡ ´ëÇØ ¾Ë¾Æº¸¼¼¿ä.
-    // ±âÁ¸ Æ¯¼º¿¡ ´ëÇÑ ¼³¸íÀ» º¸·Á¸é °¡¸®Åµ´Ï´Ù.
-    // ÀÚ¼¼ÇÑ ³»¿ëÀ» º¸·Á¸é https://go.microsoft.com/fwlink/?linkid=830387À»(¸¦) ¹æ¹®ÇÏ¼¼¿ä.
+    // IntelliSenseë¥¼ ì‚¬ìš©í•˜ì—¬ ê°€ëŠ¥í•œ íŠ¹ì„±ì— ëŒ€í•´ ì•Œì•„ë³´ì„¸ìš”.
+    // ê¸°ì¡´ íŠ¹ì„±ì— ëŒ€í•œ ì„¤ëª…ì„ ë³´ë ¤ë©´ ê°€ë¦¬í‚µë‹ˆë‹¤.
+    // ìì„¸í•œ ë‚´ìš©ì„ ë³´ë ¤ë©´ https://go.microsoft.com/fwlink/?linkid=830387ì„(ë¥¼) ë°©ë¬¸í•˜ì„¸ìš”.
 
     "version": "0.2.0",
     "configurations": [
@@ -19,7 +19,7 @@
             "miDebuggerPath": "E:\\MinGW\\bin\\gdb.exe",
             "setupCommands": [
                 {
-                    "description": "gdb¿¡ ÀÚµ¿ ¼­½Ä Àû¿ë",
+                    "description": "gdbì— ìë™ ì„œì‹ ì ìš©",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }

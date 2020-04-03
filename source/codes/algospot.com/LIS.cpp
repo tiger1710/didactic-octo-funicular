@@ -8,26 +8,32 @@ using namespace std;
 class LIS {
 private:
     int N, ans;
-    vector<int> sequence, cache;
+    vector<int> sequence, cache, nlogn;
 
-    void length(const int& index) {
-        vector<int>::iterator loc = upper_bound(cache.begin(), cache.end(), sequence[index]);
-        if (loc + 1 < cache.end()) *loc = sequence[index]; //update
-        else cache.insert(loc, sequence[index]); //insert
+    int lis(const int& index) {
+        if (index == N) return 0;
+        int& ret = cache[index];
+        if (ret) return ret;
+
+        ret = upper_bound(nlogn.begin(), nlogn.end(), sequence[index]) - nlogn.begin();
+        if (ret < nlogn.size()) nlogn[ret] = sequence[index];
+        else nlogn.push_back(sequence[index]);
+
+        return max(ret, lis(index + 1));
     }
 
     void input(void) {
         cin >> N;
-        sequence = vector<int>(N); cache.clear();
+        sequence = cache = vector<int>(N);
         for (int& i : sequence) cin >> i;
-        cache.push_back(numeric_limits<int>::max());
+        nlogn.clear();
     }
     void calc(void) {
-        for (int i = 0; i < N; i++) length(i);
-        ans = cache.size() - 1;
+        //nlogn Àû¿ë...?
+        ans = lis(0);
     }
     void output(void) {
-        cout << ans << endl;
+        cout << ans + 1 << endl;
     }
 public:
     void solve(void) {
