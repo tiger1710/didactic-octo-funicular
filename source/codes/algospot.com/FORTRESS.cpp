@@ -24,48 +24,52 @@ public:
         return i >> rampart.center.first >> rampart.center.second >> rampart.r;
     }
     bool operator<(const Rampart& rampart) const { return this->r < rampart.r; }
-    bool operator!=(const Rampart& rampart) const {
-        return this->center not_eq rampart.center or
-                this->r not_eq rampart.r;
-    }
-    bool isParentOf(const Rampart& child, const vector<Rampart>& rampart) {
-        if (not enclose(child)) return false;
-        for (const Rampart& i : rampart) {
-            if (i not_eq *this and i not_eq child and
-                enclose(i) and i.enclose(child)) return false;
-        }
-        return true;
+    bool isChildOf(const Rampart& parent) const {
+        return parent.enclose(*this);
     }
 };
 
 class Fortress {
 private:
-    int N, ans;
+    int N, ans, leafToLeaf;
     vector<Rampart> rampart;
+    vector<vector<int>> tree;
 
     int height(const int& root) {
-        int h1 = 0, h2 = 0;
         int h = 0;
-
-        for (int i = 1; i < N; i++) {
-            if (rampart[root].isParentOf(rampart[i], rampart)) {
-                int t = height(i);
-                if (h1 < t) { h2 = h1; h1 = t; }
-                else if (h2 < t) h2 = t;
-                h = max(h, t);
-            }
+        vector<int> heights;
+        for (const int& child : tree[root]) {
+            heights.push_back(height(child));
         }
+        if (heights.empty()) return 0;
+        sort(heights.begin(), heights.end());
 
-        if (h < h1 + h2) return h1 + h2;
-        else return h + 1;
+        if (2 <= heights.size())
+            leafToLeaf = max(leafToLeaf,
+                                2 + heights[heights.size() - 1] + heights[heights.size() - 2]);
+
+        return heights.back() + 1;
+    }
+
+    void init(void) {
+        leafToLeaf = 0;
+        sort(rampart.begin(), rampart.end());
+        for (int child = 0; child < N; child++)
+            for (int parent = child + 1; parent < N; parent++)
+                if (rampart[child].isChildOf(rampart[parent])) {
+                    tree[parent].push_back(child);
+                    break;
+                }
     }
     void input(void) {
         cin >> N;
         rampart = vector<Rampart>(N);
+        tree = vector<vector<int>>(N);
         for (Rampart& i : rampart) cin >> i;
     }
     void calc(void) {
-        ans = height(0);
+        init();
+        ans = max(leafToLeaf, height(N - 1));
     }
     void output(void) { cout << ans << endl; }
 public:
