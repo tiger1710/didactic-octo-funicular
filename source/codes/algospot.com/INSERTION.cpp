@@ -1,9 +1,11 @@
 #include <iostream>
 #include <vector>
+#define endl '\n'
 using namespace std;
 
 class Node {
 private:
+    friend class Insertion;
     typedef pair<Node*, Node*> NodePair;
     int key, priority, size;
     Node* left;
@@ -11,15 +13,15 @@ private:
 
     Node(const int& key) : key(key), priority(rand()),
         size(1), left(nullptr), right(nullptr) { }
-    void setLeft(Node* newLeft) { left = newLeft; }
-    void setRight(Node* newRight) { right = newRight; }
+    void setLeft(Node* newLeft) { left = newLeft; calcSize(); }
+    void setRight(Node* newRight) { right = newRight; calcSize(); }
     void calcSize(void) {
         size = 1;
         if (left) size += left->size;
         if (right) size += right->size;
     }
 
-    NodePair split(Node* root, const int& key) {
+    static NodePair split(Node* root, const int& key) {
         if (root == nullptr) return NodePair(nullptr, nullptr);
 
         if (root->key < key) {
@@ -32,7 +34,7 @@ private:
         root->setLeft(ls.second);
         return NodePair(ls.first, root);
     }
-    Node* insert(Node* root, Node* node) {
+    static Node* insert(Node* root, Node* node) {
         if (root == nullptr) return node;
 
         if (root->priority < node->priority) {
@@ -49,7 +51,7 @@ private:
         return root;
     }
     
-    Node* merge(Node* a, Node* b) {
+    static Node* merge(Node* a, Node* b) {
         if (a == nullptr) return b;
         else if (b == nullptr) return a;
 
@@ -61,7 +63,7 @@ private:
         a->setRight(merge(a->right, b));
         return a;
     }
-    Node* erase(Node* root, const int& key) {
+    static Node* erase(Node* root, const int& key) {
         if (root == nullptr) return root;
 
         if (root->key == key) {
@@ -78,7 +80,7 @@ private:
         return root;
     }
 
-    Node* kth(Node* root, const int& k) {
+    static Node* kth(Node* root, const int& k) {
         int leftSize = 0;
         if (root->left not_eq nullptr) leftSize = root->left->size;
         if (k <= leftSize) return kth(root->left, k);
@@ -100,25 +102,34 @@ private:
 class Insertion {
 private:
     int N;
-    vector<int> shifted;
+    vector<int> shifted, ans;
 
     void input(void) {
         cin >> N;
-        shifted = vector<int>(N);
+        shifted = ans = vector<int>(N);
         for (int& i : shifted) cin >> i;
     }
     void calc(void) {
         Node* candidates = nullptr;
-        for (int i = 0; i < N; i++) {
-            
+        for (int i = 0; i < N; i++)
+            candidates = Node::insert(candidates, new Node(i + 1));
+
+        for (int i = N - 1; i >= 0; i--) {
+            int larger = shifted[i];
+            Node* k = Node::kth(candidates, i + 1 - larger);
+            ans[i] = k->key;
+            candidates = Node::erase(candidates, k->key);
         }
     }
     void output(void) {
-        
+        for (const int& i : ans) cout << i << ' ';
+        cout << endl;
     }
 public:
     void solve(void) {
-        
+        input();
+        calc();
+        output();
     }
 };
 
@@ -126,7 +137,10 @@ int main(void) {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
 
-
+    int C; cin >> C;
+    Insertion insertion;
+    while (C--)
+        insertion.solve();
 
     return 0;
 }
