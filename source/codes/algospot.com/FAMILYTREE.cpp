@@ -28,7 +28,7 @@ private:
     }
 public:
     SegmentTree(const vector<int>& arr) {
-        n = arr.size();
+        n = arr.size() + 1;
         tree = vector<int>(n << 2);
         init(arr, 0, n, 0);
     }
@@ -44,7 +44,7 @@ private:
     vector<vector<int>> children;
     vector<int> num2serial, serial2num, locInTrip, depth, trip, ans;
     
-    int nextSerial = 0;
+    int nextSerial;
     
     //search under node "cur" that depth[cur] = depth
     void traverse(const int& cur, const int& depth) {
@@ -65,15 +65,15 @@ private:
     int distance(const SegmentTree& tree, const int& u, const int& v) {
         int lu = locInTrip[u], lv = locInTrip[v];
         if (lu > lv) swap(lu, lv);
-        int lca = serial2num[tree.query(lu, lv)];
+        int lca = serial2num[tree.query(lu, lv + 1)];//[ ) 구간..
         return depth[u] + depth[v] - (depth[lca] << 1);
     }
     
     void input(void) {
         cin >> N >> Q;
         children = vector<vector<int>>(N);
-        num2serial = serial2num = vector<int>((N << 1));
-        locInTrip = depth = vector<int>(N);
+        locInTrip = num2serial = serial2num = depth = vector<int>(N);
+        nextSerial = 0;
         
         for (int i = 1; i < N; i++) {
             int parent; cin >> parent;
@@ -89,9 +89,10 @@ private:
         }
     }
     void output(void) {
-        for (const int& i : ans)
-            cout << i << endl;
+        for (const int& d : ans)
+            cout << d << endl;
         ans.clear();
+        trip.clear();
     }
 public:
     void solve(void) {
