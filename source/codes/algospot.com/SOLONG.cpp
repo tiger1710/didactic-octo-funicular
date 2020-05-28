@@ -9,7 +9,7 @@ using namespace std;
 class TrieNode {
 private:
 	friend class SoLong;
-	const int ALPHABETS = 26;
+	static const int ALPHABETS = 26;
 	vector<unique_ptr<TrieNode>> children;
 	int terminal;
 	int first;
@@ -27,7 +27,7 @@ private:
 			children[next]->insert(key + 1, id);
 		}
 	}
-	TrieNode* find(const char* key) {
+	const TrieNode* find(const char* key) {
 		if (*key == '\0') return this;
 		int next = *key - 'A';
 		if (children[next] == nullptr) return nullptr;
@@ -42,11 +42,7 @@ private:
 		return 1 + children[next]->type(key + 1, id);
 	}
 public:
-	TrieNode(void) : children(ALPHABETS), terminal(-1), first(-1) {
-		for (auto& child : children) {
-			child = unique_ptr<TrieNode>(nullptr);
-		}
-	}
+	TrieNode(void) : children(ALPHABETS), terminal(-1), first(-1) { }
 	
 	int countKeys(const string& word) {
 		const TrieNode* node = find(&word[0]);
@@ -61,12 +57,12 @@ private:
 	unique_ptr<TrieNode> trie;
 	
 	void init(void) {
-		sort(dictionary.begin(), dictionary.end(), greater<pair<int, string>>());
+		sort(dictionary.begin(), dictionary.end());
 		trie = unique_ptr<TrieNode>(new TrieNode);
-		for (int i = 0; i < dictionary.size(); i++)
+		for (int i = 0; i < N; i++)
 			trie->insert(dictionary[i].second.c_str(), i);
 		trie->first = -1;
-		ans = 0;
+		ans = M - 1;
 	}
 	
 	void input(void) {
@@ -74,21 +70,20 @@ private:
 		for (int i = 0; i < N; i++) {
 			string buf; int freq;
 			cin >> buf >> freq;
-			dictionary.push_back(make_pair(freq, buf));
+			dictionary.push_back(make_pair(-freq, buf));
 		}
 	}
 	void calc(void) {
 		init();
-		ans += (M - 1);
 		while (M--) {
-			int cnt = 0;
 			string str; cin >> str;
-			cnt = trie->countKeys(str);
-			ans += cnt;
+			ans += trie->countKeys(str);
 		}
 	}
 	void output(void) {
 		cout << ans << endl;
+		dictionary.clear();
+		trie.reset();
 	}
 public:
 	void solve(void) {
