@@ -4,14 +4,15 @@
 #include <queue>
 #define endl '\n'
 using namespace std;
-
 //https://blog.naver.com/kks227/220804885235
+
+
 class Edge {
 private:
     int target, capacity, flow;
     Edge* reverse;
 public:
-    int getTarget(void) const { return this->target; }
+    int getTarget(void) const { return target; }
     int residualCapacity(void) const { return capacity - flow; }
     void push(const int& amt) {
         flow += amt;
@@ -23,15 +24,19 @@ public:
         this->flow = 0;
         this->reverse = p;
     }
+    void increase(void) {
+        capacity++;
+    }
 };
 
 class MatchFix {
 private:
-    int N, M;
+    int N, M, ans;
     vector<int> wins;
     vector<pair<int, int>> match;
     vector<vector<Edge*>> adj;
-    vector<vector<int>> capacity, flow;
+    bool flag;
+    int ddd = 0;
 
     void addEdge(const int& u, const int& v, const int& capacity) {
         Edge* uv = new Edge;
@@ -41,29 +46,6 @@ private:
         adj[u].push_back(uv);
         adj[v].push_back(vu);
     }
-
-    bool canWinWith(const int& totalWins) {
-        if (*max_element(wins.begin(), wins.end()) >= totalWins)
-            return false;
-
-        adj = vector<vector<Edge*>>(2 + N + M);//source:0, sink:1
-        for (int i = 0; i < M; i++) {
-            //source -> match
-            addEdge(0, 2 + i, 1);
-
-            //match -> player
-            addEdge(2 + i, 2 + M + match[i].first, 1);
-            addEdge(2 + i, 2 + M + match[i].second, 1);
-        }
-
-        for (int i = 0; i < N; i++) {
-            int maxWin = (i == 0 ? totalWins : totalWins - 1);
-            addEdge(2 + M + i, 1, maxWin - wins[i]);
-        }
-
-        return networkFlow() == M;
-    }
-
     int networkFlow(void) {
         int totalFlow = 0;
         int V = 2 + M + N;
@@ -92,26 +74,63 @@ private:
             for (int p = 1; p not_eq 0; p = parent[p])
                 path[p]->push(amount);
             
+            wins[parent[1]] += amount;
             totalFlow += amount;
         }
-
+        ddd = totalFlow;
         return totalFlow;
+    }
+    bool canWinWith(const int& totalWins) {
+        if (*max_element(wins.begin() + 1, wins.end()) >= totalWins)
+            return false;
+        return networkFlow() == M;
+    }
+
+    void increase(const int& w) {
+        addEdge(2 + M, 1 , w - wins[0]);
+        int maxWin = w - 1;
+        for (int i = 1; i < N; i++)
+            addEdge(2 + M + i, 1, maxWin - wins[i]);
     }
 
     void input(void) {
         cin >> N >> M;
+        flag = false;
         wins = vector<int>(N);
         match = vector<pair<int, int>>(M);
-        capacity = flow = vector<vector<int>>(2 + N + M, vector<int>(2 + N + M, 0));
+        adj = vector<vector<Edge*>>(2 + N + M);
         for (int& i : wins) cin >> i;
         for (pair<int, int>& m : match)
             cin >> m.first >> m.second;
+
+        for (int i = 0; i < M; i++) {
+            //source -> match
+            addEdge(0, 2 + i, 1);
+
+            //match -> player
+            addEdge(2 + i, 2 + M + match[i].first, 1);
+            addEdge(2 + i, 2 + M + match[i].second, 1);
+        }
+        increase(wins[0]);
     }
     void calc(void) {
+        int w = wins[0];
+        for (int i = 0; i <= M; i++) {
+            if (canWinWith(w)) {
+                ans = w;
+                return;
+            }
+            w++;
+            increase(w);
+        }
 
+        ans = -1;
     }
     void output(void) {
-
+        cout << ans << endl;
+        for (vector<Edge*>& r : adj)
+            for (Edge*& c : r)
+                delete c;
     }
 public:
     void solve(void) {
@@ -125,6 +144,10 @@ int main(void) {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     
+    int C; cin >> C;
+    MatchFix mf;
+    while (C--)
+        mf.solve();
 
     return 0;
 }
