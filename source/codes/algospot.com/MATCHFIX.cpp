@@ -24,6 +24,10 @@ public:
         this->flow = 0;
         this->reverse = p;
     }
+    void increase(void) {
+        //cout << "target : " << target << " increased!!!" << endl;
+        capacity++;
+    }
 };
 
 class MatchFix {
@@ -76,13 +80,15 @@ private:
     bool canWinWith(const int& totalWins) {
         if (*max_element(wins.begin() + 1, wins.end()) >= totalWins)
             return false;
+        //cout << "current win : " << totalWins << endl;
         return networkFlow() == M;
     }
 
-    void increase(const int& w) {
+    void increase(void) {
         for (int i = 0; i < N; i++)
-            if (w - wins[i] > 0)
-                addEdge(2 + M + i, 1, 1);
+            for (Edge*& e : adj[2 + M + i])
+                if (e->getTarget() == 1)
+                    e->increase();
     }
 
     void input(void) {
@@ -107,20 +113,19 @@ private:
 
         //player -> sink
         int maxWin = wins[0] - 1;
+        addEdge(2 + M, 1, 0);
         for (int i = 1; i < N; i++)
-            if (maxWin - wins[i] > 0)
-                addEdge(2 + M + i, 1, maxWin - wins[i]);
+            addEdge(2 + M + i, 1, maxWin - wins[i]);
     }
     void calc(void) {
         int w = wins[0];
         for (int i = 0; i <= canWin; i++) {
-            cout << "current win : " << w << endl;
             if (canWinWith(w)) {
                 ans = w;
                 return;
             }
             w++;
-            increase(w);
+            increase();
         }
 
         ans = -1;
