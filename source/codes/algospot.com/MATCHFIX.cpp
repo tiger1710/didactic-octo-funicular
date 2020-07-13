@@ -24,19 +24,14 @@ public:
         this->flow = 0;
         this->reverse = p;
     }
-    void increase(void) {
-        capacity++;
-    }
 };
 
 class MatchFix {
 private:
-    int N, M, ans;
+    int N, M, ans, canWin;
     vector<int> wins;
     vector<pair<int, int>> match;
     vector<vector<Edge*>> adj;
-    bool flag;
-    int ddd = 0;
 
     void addEdge(const int& u, const int& v, const int& capacity) {
         Edge* uv = new Edge;
@@ -74,10 +69,8 @@ private:
             for (int p = 1; p not_eq 0; p = parent[p])
                 path[p]->push(amount);
             
-            wins[parent[1]] += amount;
             totalFlow += amount;
         }
-        ddd = totalFlow;
         return totalFlow;
     }
     bool canWinWith(const int& totalWins) {
@@ -87,15 +80,14 @@ private:
     }
 
     void increase(const int& w) {
-        addEdge(2 + M, 1 , w - wins[0]);
-        int maxWin = w - 1;
-        for (int i = 1; i < N; i++)
-            addEdge(2 + M + i, 1, maxWin - wins[i]);
+        for (int i = 0; i < N; i++)
+            if (w - wins[i] > 0)
+                addEdge(2 + M + i, 1, 1);
     }
 
     void input(void) {
         cin >> N >> M;
-        flag = false;
+        canWin = 0;
         wins = vector<int>(N);
         match = vector<pair<int, int>>(M);
         adj = vector<vector<Edge*>>(2 + N + M);
@@ -108,14 +100,21 @@ private:
             addEdge(0, 2 + i, 1);
 
             //match -> player
+            if (match[i].first == 0 or match[i].second == 0) canWin++;
             addEdge(2 + i, 2 + M + match[i].first, 1);
             addEdge(2 + i, 2 + M + match[i].second, 1);
         }
-        increase(wins[0]);
+
+        //player -> sink
+        int maxWin = wins[0] - 1;
+        for (int i = 1; i < N; i++)
+            if (maxWin - wins[i] > 0)
+                addEdge(2 + M + i, 1, maxWin - wins[i]);
     }
     void calc(void) {
         int w = wins[0];
-        for (int i = 0; i <= M; i++) {
+        for (int i = 0; i <= canWin; i++) {
+            cout << "current win : " << w << endl;
             if (canWinWith(w)) {
                 ans = w;
                 return;
