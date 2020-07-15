@@ -24,10 +24,6 @@ public:
         this->flow = 0;
         this->reverse = p;
     }
-    void increase(void) {
-        //cout << "target : " << target << " increased!!!" << endl;
-        capacity++;
-    }
 };
 
 class MatchFix {
@@ -83,12 +79,29 @@ private:
         //cout << "current win : " << totalWins << endl;
         return networkFlow() == M;
     }
+    void makeEdge(const int& totalWins) {
+        adj = vector<vector<Edge*>>(2 + N + M);
+        for (int i = 0; i < M; i++) {
+            //source -> match
+            addEdge(0, 2 + i, 1);
 
-    void increase(void) {
-        for (int i = 0; i < N; i++)
-            for (Edge*& e : adj[2 + M + i])
-                if (e->getTarget() == 1)
-                    e->increase();
+            //match -> player
+            addEdge(2 + i, 2 + M + match[i].first, 1);
+            addEdge(2 + i, 2 + M + match[i].second, 1);
+        }
+
+        //player -> sink
+        addEdge(2 + M, 1, totalWins - wins[0]);
+        int w = totalWins - 1;
+        for (int i = 1; i < N; i++)
+            if (w - wins[i] > 0)
+                addEdge(2 + M + i, 1, w - wins[i]);
+    }
+    void deleteEdge(void) {
+        for (vector<Edge*>& r : adj)
+            for (Edge*& c : r)
+                delete c;
+
     }
 
     void input(void) {
@@ -96,26 +109,12 @@ private:
         canWin = 0;
         wins = vector<int>(N);
         match = vector<pair<int, int>>(M);
-        adj = vector<vector<Edge*>>(2 + N + M);
         for (int& i : wins) cin >> i;
-        for (pair<int, int>& m : match)
+        for (pair<int, int>& m : match) {
             cin >> m.first >> m.second;
-
-        for (int i = 0; i < M; i++) {
-            //source -> match
-            addEdge(0, 2 + i, 1);
-
-            //match -> player
-            if (match[i].first == 0 or match[i].second == 0) canWin++;
-            addEdge(2 + i, 2 + M + match[i].first, 1);
-            addEdge(2 + i, 2 + M + match[i].second, 1);
+            if (m.first == 0 or m.second == 0) canWin++;
         }
-
-        //player -> sink
-        int maxWin = wins[0] - 1;
-        addEdge(2 + M, 1, 0);
-        for (int i = 1; i < N; i++)
-            addEdge(2 + M + i, 1, maxWin - wins[i]);
+        makeEdge(wins[0]);
     }
     void calc(void) {
         int w = wins[0];
@@ -125,16 +124,15 @@ private:
                 return;
             }
             w++;
-            increase();
+            deleteEdge();
+            makeEdge(w);
         }
+        deleteEdge();
 
         ans = -1;
     }
     void output(void) {
         cout << ans << endl;
-        for (vector<Edge*>& r : adj)
-            for (Edge*& c : r)
-                delete c;
     }
 public:
     void solve(void) {
