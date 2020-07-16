@@ -7,6 +7,7 @@ typedef pair<int, int> point;
 
 class BipartiteMatching {
 private:
+    int n, m;
     vector<vector<int>> adj;
     vector<int> aMatch, bMatch;
     vector<bool> visited;
@@ -23,13 +24,14 @@ private:
         return false;
     }
 public:
-    BipartiteMatching(const vector<vector<int>>& adj) : adj(adj) { }
+    BipartiteMatching(const vector<vector<int>>& adj,
+                        const int& n, const int& m) : adj(adj), n(n), m(m) { }
     int bipartiteMatch(void) {
-        aMatch = vector<int>(adj.size(), -1);
-        bMatch = vector<int>(adj.size(), -1);
+        aMatch = vector<int>(n, -1);
+        bMatch = vector<int>(m, -1);
         int size = 0;
-        for (int start = 0; start < adj.size(); start++) {
-            visited = vector<bool>(adj.size(), false);
+        for (int start = 0; start < n; start++) {
+            visited = vector<bool>(n, false);
             if(dfs(start)) size++;
         }
         return size;
@@ -50,20 +52,20 @@ private:
     int n, m;
     vector<vector<int>> adj;
 
-
     int ans;
 
     bool visited(const int& dir, const int& r, const int& c) {
-        return board[r][c] not_eq '.' or id[dir][r][c] not_eq -1;
+        return board[r][c] == '*' or id[dir][r][c] not_eq -1;
     }
     bool isSafe(const int& r, const int& c) {
-        return board[r][c] == '.' and
-                (0 <= r and r < N) and
-                (0 <= c and c < N);
+        return (0 <= r and r < N) and
+                (0 <= c and c < N) and
+                board[r][c] == '.';
     }
 
     void init(void) {
         //번호 붙이기
+        id[0] = id[1] = vector<vector<int>>(N, vector<int>(N, -1));
         int count[2] = { 0, 0 };
         for (int dir = 0; dir < 2; dir++)
             for (int r = 0; r < N; r++)
@@ -80,10 +82,11 @@ private:
 
         //이분 그래프
         n = count[0]; m = count[1];
+        adj = vector<vector<int>>(n);
         for (int r = 0; r < N; r++)
             for (int c = 0; c < N; c++)
                 if (board[r][c] == '.')
-                    adj[id[0][r][c]][id[1][r][c]] = 1;
+                    adj[id[0][r][c]].push_back(id[1][r][c]);
     }
 
     //solve
@@ -97,7 +100,8 @@ private:
         }
     }
     void calc(void) {
-        BipartiteMatching bm(adj);
+        init();
+        BipartiteMatching bm(adj, n, m);
         ans = bm.bipartiteMatch();
     }
     void output(void) {
