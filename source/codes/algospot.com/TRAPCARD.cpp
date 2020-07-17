@@ -1,7 +1,8 @@
 #include <iostream>
 #include <algorithm>
+#include <vector>
 #include <cassert>
-#define endl '\n'
+//#define endl '\n'
 using namespace std;
 typedef pair<int, int> point;
 
@@ -41,12 +42,12 @@ public:
 
 class TrapCard {
 private:
-    const point diff[4] = { point(1, 0), point(-1, 0), point(0, -1), point(0, 1) };
+    const point diff[4] = { point(-1, 0), point(1, 0), point(0, -1), point(0, 1) };
 
     int n, m;
     vector<vector<char>> base;
 
-    vector<vector<int>> adj;
+    vector<vector<int>> id, adj;
     vector<int> aMatch, bMatch;
     vector<bool> aChosen, bChosen;
 
@@ -56,7 +57,7 @@ private:
     }
     void init(void) {
         vector<vector<int>> id(n, vector<int>(m, -1));
-
+        adj = vector<vector<int>>(n, vector<int>(m, 0));
         int cnt[2] = { 0, 0 };
 
         for (int r = 0; r < n; r++)
@@ -75,6 +76,12 @@ private:
                             adj[nr][nc] = 1;
                     }
 
+        cout << "cnt[0]:" << cnt[0] << ' ' << "cnt[1]:" << cnt[1] << endl;
+
+        BipartiteMatching bm(adj, cnt[0], cnt[1]);
+        int C = bm.bipartiteMatch();
+        aMatch.swap(bm.aMatch);
+        bMatch.swap(bm.bMatch);
     }
 
 
@@ -91,10 +98,6 @@ private:
     }
     void calc(void) {
         init();
-        BipartiteMatching bm(adj, n, m);
-        int C = bm.bipartiteMatch();
-        aMatch.swap(bm.aMatch);
-        bMatch.swap(bm.bMatch);
 
         // 1. A의 모든 정점들을 선택하고, B에서 대응되지 않은 정점들을 선택한다. 
         aChosen = vector<bool>(n, true);
@@ -124,6 +127,7 @@ private:
             if (i) cnt++;
         for (const vector<bool>::reference& i : bChosen)
             if (i) cnt++;
+        cout << cnt << endl;
     }
 public:
     void solve(void) {
