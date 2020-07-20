@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <vector>
 #include <cassert>
-//#define endl '\n'
+#define endl '\n'
 using namespace std;
 typedef pair<int, int> point;
 
@@ -17,14 +17,14 @@ private:
     bool dfs(const int& a) {
         if (visited[a]) return false;
         visited[a] = true;
-        for (const int& b : adj[a])
-            if (bMatch[b] == -1 or dfs(bMatch[b])) {
-                //cout << "aMatch[" << a << "]:" << b << endl;
-                //cout << "bMatch[" << b << "]:" << a << endl;
-                aMatch[a] = b;
-                bMatch[b] = a;
-                return true;
-            }
+        for (int b = 0; b < m; b++)
+            if (adj[a][b])
+                if (bMatch[b] == -1 or dfs(bMatch[b])) {
+                    aMatch[a] = b;
+                    bMatch[b] = a;
+                    return true;
+                }
+        
         return false;
     }
 public:
@@ -52,6 +52,7 @@ private:
     vector<vector<int>> id, adj;
     vector<int> aMatch, bMatch;
     vector<bool> aChosen, bChosen;
+    vector<point> aPos, bPos;
 
     bool inRange(const int& r, const int& c) {
         return 0 <= r and r < n and
@@ -64,27 +65,31 @@ private:
         for (int r = 0; r < n; r++)
             for (int c = 0; c < m; c++)
                 if (base[r][c] == '.') {
-                    if ((r + c) & 1) id[r][c] = cnt[1]++;//홀수
-                    else id[r][c] = cnt[0]++;//짝수
+                    if ((r + c) & 1) {
+                        id[r][c] = cnt[1]++;//홀수
+                        bPos.push_back(make_pair(r, c));
+                    }
+                    else {
+                        id[r][c] = cnt[0]++;//짝수
+                        aPos.push_back(make_pair(r, c));
+                    }
                 }
 
-        adj = vector<vector<int>>(cnt[0]);
+        adj = vector<vector<int>>(cnt[0], vector<int>(cnt[1], 0));
         for (int r = 0; r < n; r++)
             for (int c = 0; c < m; c++)
                 if (not ((r + c) & 1) and base[r][c] == '.')
                     for (int i = 0; i < 4; i++) {
                         int nr = r + diff[i].first, nc = c + diff[i].second;
                         if (inRange(nr, nc) and base[nr][nc] == '.')
-                            adj[id[r][c]].push_back(id[nr][nc]);
+                            adj[id[r][c]][id[nr][nc]] = 1;
                     }
 
-        cout << "cnt[0]:" << cnt[0] << ' ' << "cnt[1]:" << cnt[1] << endl;
         BipartiteMatching bm(adj, cnt[0], cnt[1]);
         int C = bm.bipartiteMatch();
         aMatch.swap(bm.aMatch);
         bMatch.swap(bm.bMatch);
     }
-
 
     void input(void) {
         cin >> n >> m;
@@ -101,8 +106,8 @@ private:
         init();
 
         // 1. A의 모든 정점들을 선택하고, B에서 대응되지 않은 정점들을 선택한다. 
-        aChosen = vector<bool>(n, true);
-        bChosen = vector<bool>(m, false);
+        aChosen = vector<bool>(aMatch.size(), true);
+        bChosen = vector<bool>(bMatch.size(), false);
         for (int i = 0; i < m; i++)
             if (bMatch[i] == -1)
                 bChosen[i] = true;
@@ -124,11 +129,24 @@ private:
     }
     void output(void) {
         int cnt = 0;
-        for (const vector<bool>::reference& i : aChosen)
-            if (i) cnt++;
-        for (const vector<bool>::reference& i : bChosen)
-            if (i) cnt++;
+        for (int i = 0; i < aChosen.size(); i++)
+            if (aChosen[i]) {
+                cnt++;
+                base[aPos[i].first][aPos[i].second] = '^';
+            }
+        for (int i = 0; i < bChosen.size(); i++)
+            if (bChosen[i]) {
+                cnt++;
+                base[bPos[i].first][bPos[i].second] = '^';
+            }
+        aPos.clear(); bPos.clear();
+
         cout << cnt << endl;
+        for (const vector<char>& r : base) {
+            for (const char& c : r)
+                cout << c;
+            cout << endl;
+        }
     }
 public:
     void solve(void) {
