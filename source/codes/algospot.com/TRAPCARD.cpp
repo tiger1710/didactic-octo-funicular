@@ -19,6 +19,8 @@ private:
         visited[a] = true;
         for (const int& b : adj[a])
             if (bMatch[b] == -1 or dfs(bMatch[b])) {
+                //cout << "aMatch[" << a << "]:" << b << endl;
+                //cout << "bMatch[" << b << "]:" << a << endl;
                 aMatch[a] = b;
                 bMatch[b] = a;
                 return true;
@@ -57,27 +59,26 @@ private:
     }
     void init(void) {
         vector<vector<int>> id(n, vector<int>(m, -1));
-        adj = vector<vector<int>>(n, vector<int>(m, 0));
         int cnt[2] = { 0, 0 };
 
         for (int r = 0; r < n; r++)
             for (int c = 0; c < m; c++)
                 if (base[r][c] == '.') {
-                    if ((r + c) & 1) id[r][c] = cnt[0]++;
-                    else id[r][c] = cnt[1]++;
+                    if ((r + c) & 1) id[r][c] = cnt[1]++;//È¦¼ö
+                    else id[r][c] = cnt[0]++;//Â¦¼ö
                 }
 
+        adj = vector<vector<int>>(cnt[0]);
         for (int r = 0; r < n; r++)
             for (int c = 0; c < m; c++)
-                if (((r + c) & 1) and base[r][c] == '.')
+                if (not ((r + c) & 1) and base[r][c] == '.')
                     for (int i = 0; i < 4; i++) {
                         int nr = r + diff[i].first, nc = c + diff[i].second;
                         if (inRange(nr, nc) and base[nr][nc] == '.')
-                            adj[nr][nc] = 1;
+                            adj[id[r][c]].push_back(id[nr][nc]);
                     }
 
         cout << "cnt[0]:" << cnt[0] << ' ' << "cnt[1]:" << cnt[1] << endl;
-
         BipartiteMatching bm(adj, cnt[0], cnt[1]);
         int C = bm.bipartiteMatch();
         aMatch.swap(bm.aMatch);
