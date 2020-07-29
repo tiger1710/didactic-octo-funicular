@@ -10,8 +10,9 @@ private:
     const int M = 1000000000 + 100;
     string ans;
 
-    int bino[201][201] = { 0, };
+    vector<vector<int>> bino;
     void calcBino(void) {
+        bino = vector<vector<int>>(201, vector<int>(201, 0));
         for (int i = 0; i <= 200; i++) {
             bino[i][0] = bino[i][i] = 1;
             for (int k = 1; k < i; k++)
@@ -20,15 +21,15 @@ private:
     }
     string kth(const int& n, const int& m, const int& skip) {
         if (n == 0) return string(m, 'o');
-        if (skip < bino[n + m][n]) return "-" + kth(n - 1, m, skip);
-        return "o" + kth(n, m - 1, skip - bino[n + m][n]);
+        if (skip < bino[n + m - 1][n - 1]) return "-" + kth(n - 1, m, skip);
+        return "o" + kth(n, m - 1, skip - bino[n + m - 1][n - 1]);
     }
 
     void input(void) {
         cin >> n >> m >> k;
     }
     void calc(void) {
-        ans = kth(n, m, k);
+        ans = kth(n, m, k - 1);
     }
     void output(void) {
         cout << ans << endl;
