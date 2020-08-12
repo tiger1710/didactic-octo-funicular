@@ -10,7 +10,7 @@ private:
     const double INF = 1e9+7;
     int N; double ans = INF;
 
-    vector<vector<double>> dist;
+    vector<vector<double>> dist, cache;
     vector<bool> visited;
     double shortestPath(const int& current, const double& currentLength = 0.0) {
         if (not count(visited.begin(), visited.end(), false)) return currentLength;
@@ -24,6 +24,19 @@ private:
             }
         }
 
+        return ret;
+    }
+    double shortestPath2(const int& here, const int& visited) {
+        //구현안함. 보정해야됨.
+        if (visited == (1 << N) - 1) return dist[here][0];
+        double& ret = cache[here][visited];
+        if (ret >= 0) return ret;
+        ret = INF;
+        for (int next = 0; next < N; next++) {
+            if (visited bitand (1 << next)) continue;
+            double cand = dist[here][next] + shortestPath2(next, visited + (1 << next));
+            ret = min(ret, cand);
+        }
         return ret;
     }
 
