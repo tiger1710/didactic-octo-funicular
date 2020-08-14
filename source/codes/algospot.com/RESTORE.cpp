@@ -26,6 +26,27 @@ private:
         
         return ret;
     }
+    int d(const string& a, const string& b) {
+        int maxOverlap = 0;
+        for (int i = 0; i < b.length(); i++)
+            if (a.substr(a.length() - 1 - i) == b.substr(0, i + 1))
+                maxOverlap++;
+            else return maxOverlap;
+        return maxOverlap;
+    }
+
+    string reconstruct(const int& last, const int& used) {
+        if (used == (1 << k) - 1) return "";
+        for (int next = 0; next < k; next++) {
+            if (used bitand (1 << next)) continue;
+            int ifUsed = restore(next, used + (1 << next)) +
+                            overlap[last][next];
+            if (restore(last, used) == ifUsed)
+                return (word[next].substr(overlap[last][next]) +
+                        reconstruct(next, used + (1 << next)));
+        }
+        return "****oops****";
+    }
 
     void input(void) {
         cin >> k;
@@ -36,14 +57,11 @@ private:
 
         //overlap[a][b] = a의 접미사, b의 접두사 겹치는 크기
         for (int last = 0; last < k; last++)
-            for (int next = 0; next < k; next++) {
-                int d = word[last].length() - word[last].rfind(word[next]);
-                overlap[last][next] = (d == string::npos ? 0 : d);
-            }
+            for (int next = 0; next < k; next++)
+                overlap[last][next] = d(word[last], word[next]);
     }
     void calc(void) {
         int cnt = restore(0, 0);
-        cout << cnt << endl;
     }
     void output(void) {
 
