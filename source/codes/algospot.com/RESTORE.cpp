@@ -12,15 +12,20 @@ private:
     vector<string> word;
     vector<vector<int>> cache, overlap;
 
+    //겹쳐지는 단어 제외
     void init(void) {
-        for (int last = 0; last < word.size(); last++)
-            for (int next = 0; next < word.size(); next++)
+        for (vector<string>::iterator last = word.begin(); last < word.end(); last++) {
+            vector<string>::iterator next = word.begin();
+            while (next < word.end()) {
                 if (last not_eq next and
-                    word[last].find(word[next]) not_eq string::npos) {
-                        word.erase(word.begin() + next);
-                        last--;
-                        break;
+                    last->find(*next) not_eq string::npos) {
+                        if (next < last) last--;
+                        next = word.erase(next);
+                        k--;
                     }
+                else next++;
+            }
+        }
     }
 
     int restore(const int& last, const int& used) {
@@ -38,6 +43,7 @@ private:
         
         return ret;
     }
+    //최대로 겹칠 수 있는 character
     int d(const string& a, const string& b) {
         int maxOverlap = 0, l = a.length() < b.length() ? a.length() : b.length();
         for (int i = 0; i < l; i++) {
@@ -68,16 +74,12 @@ private:
         for (string& str : word) cin >> str;
         init();
         cache = vector<vector<int>>(k + 1, vector<int>(1 << k, -1));
-        overlap = vector<vector<int>>(k, vector<int>(k));
-        overlap.push_back(vector<int>(k, 0));
+        overlap = vector<vector<int>>(k + 1, vector<int>(k, 0));
 
         //overlap[a][b] = a의 접미사, b의 접두사 겹치는 크기
         for (int last = 0; last < k; last++)
             for (int next = 0; next < k; next++) {
-                if (last == next) {
-                    overlap[last][next] = 0;
-                    continue;
-                }
+                if (last == next) continue;
                 overlap[last][next] = d(word[last], word[next]);
             }
     }
