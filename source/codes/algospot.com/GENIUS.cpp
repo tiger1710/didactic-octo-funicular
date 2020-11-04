@@ -1,27 +1,42 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <cmath>
 using namespace std;
 
 class SqureMatrix {
 private:
     vector<vector<double>> mat;
     int n;
-public:
-    SqureMatrix(const int& n) {
-        this->n = n;
-        mat = vector<vector<double>>(n, vector<double>(n));
+    vector<vector<double>> multiplication(const vector<vector<double>>& A, const vector<vector<double>>& B) {
+        const int n = A.size();
+
+        vector<vector<double>> C(n, vector<double>(n, 0.0));
+
+        for (int i = 0; i < n; i++)
+            for (int r = 0; r < n; r++)
+                for (int c = 0; c < n; c++)
+                    C[i][r] += A[i][c] * B[c][r];
+
+        return C;
     }
-    SqureMatrix pow(const int& k) {
-        vector<vector<double>> ret(n, vector<double>(n));
-        for (vector<double>& r : ret)
-            for (double& c : r) {
-                double sum = 0.0;
-                for (int i = 0; i < n; i++)
-                    for (int k = 0; k < n; k++)
-                        sum += mat[i][k] * mat[k][i];
-                c = sum;
-            }
+public:
+    vector<double>& operator[](const unsigned int& p) {
+        return mat[p];
+    }
+    vector<vector<double>> pow(const int& n) {
+        if (n == 1) return mat;
+        vector<vector<double>> squred = pow(n / 2);
+        if (n & 1) return multiplication(multiplication(squred, squred), mat);
+        else return multiplication(squred, squred);
+    }
+    SqureMatrix(const vector<vector<double>>& v) {
+        this->mat = v;
+    }
+    
+    SqureMatrix(const int& n) {
+        int size = static_cast<int>(sqrt(n));
+        this->mat = vector<vector<double>>(n, vector<double>(n));
     }
 };
 
@@ -51,7 +66,21 @@ private:
         return ret;
     }
     vector<double> getProb2(void) {
+        SqureMatrix W(N << 2);
+        for (int i = 0; i < 3 * N; i++)
+            W[i][i + N] = 1.0;
+
+        for (int i = 0; i < N; i++)
+            for (int k = 0; k < N; k++)
+                W[3 * N][(4 - L[i]) * N + k] = T[k][i];
         
+        SqureMatrix Wk = W.pow(K);
+        vector<double> ret(N);
+        for (int song = 0; song < N; song++)
+            for (int start = 0; start < L[song]; start++)
+                ret[song] += Wk[(3 - start) * N + song][3 * N];
+
+        return ret;
     }
 public:
 };
