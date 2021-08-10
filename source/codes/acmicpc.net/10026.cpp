@@ -48,7 +48,6 @@ int main(void) {
     vector<vector<bool>> normalVisited(N, vector<bool>(N, false));
     vector<vector<bool>> abnormalVisitied(N, vector<bool>(N, false));
 
-    pair<int, int> p1(1, 1), p2(2, 2);
     for (int i = 0; i < N; i++) {
         for (int k = 0; k < N; k++) {
             cin >> picture[i][k];
