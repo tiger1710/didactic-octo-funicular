@@ -11,24 +11,20 @@ using namespace std;
 bool isSafe(const int& cur) {
     return 0 <= cur and cur < 100001;
 }
-int& visited(vector<int>& visit, const int& cur) {
-    return visit[cur];
-}
-
 int bfs(const int& N, const int& K) {
-    vector<int> visit(100001, 0);
+    vector<int> visitied(100001, 0);
     queue<int> q;
     q.push(N);
 
     while (not q.empty()) {
         int cur = q.front(); q.pop();
-        if (cur == K) return visited(visit, cur);
+        if (cur == K) return visitied[cur];
 
         int d[3] = { cur - 1, cur + 1, cur + cur };
 
         for (int& next : d) {
-            if (isSafe(next) and not visited(visit, next)) {
-                visited(visit, next) = visited(visit, cur) + 1;
+            if (isSafe(next) and not visitied[next]) {
+                visitied[next] = visitied[cur] + 1;
                 q.push(next);
             }
         }

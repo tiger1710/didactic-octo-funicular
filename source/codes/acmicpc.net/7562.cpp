@@ -5,9 +5,8 @@
 #include <limits>
 #include <string>
 #define endl '\n'
-#define point pair<int, int>
 using namespace std;
-
+using point = pair<int, int>;
 
 point operator+(const point& A, const point& B) {	
     return point(A.first + B.first, A.second + B.second);	
@@ -22,26 +21,23 @@ bool isSafe(const point& p, const int& L) {
     return 0 <= p.first and p.first < L and 0 <= p.second and p.second < L;
 }
 
-int& visited(vector<vector<int>>& visit, const point& p) {
-    return visit[p.first][p.second];
-}
-
 int bfs(const point& from, const point& to, const int& L) {
     static const point diff[8] = { point(-1, -2), point(-2, -1), point(-2, 1), point(-1, 2),
                                 point (1, 2), point(2, 1), point(2, -1), point(1, -2) };
 
-    vector<vector<int>> visit(L, vector<int>(L, 0));
+    vector<vector<int>> visited(L, vector<int>(L, 0));
     queue<point> q;
-    visited(visit, from) = 1;
+    visited[from.first][from.second] = 1;
     q.push(from);
 
     while (not q.empty()) {
         point cur = q.front(); q.pop();
-        if (cur == to) return visited(visit, cur) - 1;
+        if (cur == to) return visited[cur.first][cur.second] - 1;
         for (const point& d : diff) {
             point next = cur + d;
-            if (isSafe(next, L) and not visited(visit, next)) {
-                visited(visit, next) = visited(visit, cur) + 1;
+            if (isSafe(next, L) and
+                not visited[next.first][next.second]) {
+                visited[next.first][next.second] = visited[cur.first][cur.second] + 1;
                 q.push(next);
             }
         }
@@ -53,6 +49,7 @@ int bfs(const point& from, const point& to, const int& L) {
 
 int main(void) {
     ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
 
     int testCase; cin >> testCase;
 

@@ -13,9 +13,9 @@ void dfs(vector<int>& student, vector<bool>& visited, vector<int>& group, int cu
     visited[cur] = true;
     int next = student[cur];
 
-    if (visited[next]) {//ÀÌ¹Ì ¹æ¹®ÇÔ
-        if (group[next] == notChecked) {//ÇÏÁö¸¸ Ã¼Å©°¡ ¾ÈµÊ
-            int i = next;               //Cycle Çü¼º
+    if (visited[next]) {//ì´ë¯¸ ë°©ë¬¸í•¨
+        if (group[next] == notChecked) {//í•˜ì§€ë§Œ ì²´í¬ê°€ ì•ˆë¨
+            int i = next;               //Cycle í˜•ì„±
             do {
                 group[i] = Grouped;
                 i = student[i];
@@ -24,7 +24,7 @@ void dfs(vector<int>& student, vector<bool>& visited, vector<int>& group, int cu
     }
     else dfs(student, visited, group, next);
 
-    //´Ù ¹æ¹®Çß´Âµ¥µµ ÀÚ½ÅÀÌ Ã¼Å©°¡¾ÈµÊ : Cycle Á¦¿Ü
+    //ë‹¤ ë°©ë¬¸í–ˆëŠ”ë°ë„ ìì‹ ì´ ì²´í¬ê°€ì•ˆë¨ : Cycle ì œì™¸
     if (group[cur] == notChecked) group[cur] = notGrouped;
 }
 

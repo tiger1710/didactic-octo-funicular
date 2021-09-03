@@ -8,7 +8,11 @@
 #define point pair<int, int>
 using namespace std;
 
-int bfs(vector<vector<int>>& people, const int& from, const int& to) {
+int n, m;
+int from, to;
+vector<vector<int> > people;
+
+int bfs(void) {
     queue<int> q;
     vector<int> visit(people.size());
 
@@ -33,11 +37,11 @@ int bfs(vector<vector<int>>& people, const int& from, const int& to) {
 int main(void) {
     ios_base::sync_with_stdio(false);
 
-    int n; cin >> n;
-    int from, to; cin >> from >> to; from--, to--;
-    int m; cin >> m;
+    cin >> n;
+    cin >> from >> to; from--, to--;
+    cin >> m;
 
-    vector<vector<int>> people(n);
+    people = vector<vector<int> >(n);
 
     for (int i = 0; i < m; i++) {
         int x, y; cin >> x >> y;
@@ -45,7 +49,7 @@ int main(void) {
         people[y - 1].push_back(x - 1);
     }
 
-    cout << bfs(people, from, to) << endl;
+    cout << bfs() << endl;
 
     return 0;
 }

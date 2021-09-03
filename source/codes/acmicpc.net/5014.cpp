@@ -1,80 +1,50 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
 #include <queue>
-#include <limits>
-#include <string>
-#define endl '\n'
-#define point pair<int, int>
+#include <algorithm>
 using namespace std;
+#define endl '\n'
+#define ALL(x) (x).begin(), (x).end()
+#define REP(i, from, to) for (int i = (from); i < (to); i++)
 
-class Building {
-private:
-    vector<int> visit;
-    int F, S, G, U, D;
-public:
-    void input();
-    void calc_bfs();
-    void output();
-    Building() {
-        input();
-        calc_bfs();
-        output();
-    }
+int F, S, G, U, D;
 
-    int isSafe(const int& p);
-    int& visited(const int& p);
-};
-
-int main(void) {
-    ios_base::sync_with_stdio(false);
-    Building building;
-
-    return 0;
+bool isSafe(const int& pos) {
+    return 0 < pos and pos < F + 1;
 }
 
-void Building::input() {
-    cin >> F >> S >> G >> U >> D;
-    visit = vector<int>(F);
-    S--; G--;
-}
-
-int Building::isSafe(const int& p) {
-    return 0 <= p and p < F;
-}
-
-int& Building::visited(const int& p) {
-    return visit[p];
-}
-
-void Building::output() {
-    int result = visited(G);
-    
-    switch (result) {
-    case 0:
-        cout << "use the stairs";
-        break;
-    default:
-        cout << result - 1;
-        break;
-    }
-}
-
-void Building::calc_bfs() {
-    static const int diff[2] = { U, -D };
+int bfs(void) {
+    vector<int> visited(F + 1, 0);
     queue<int> q;
-    q.push(S);
-    visited(S) = 1;
+    q.push(S); visited[S] = 1;
 
     while (not q.empty()) {
-        int cur = q.front(); q.pop();
-
-        for (const int& d : diff) {
-            int next = cur + d;
-            if (isSafe(next) and (not visited(next))) {
+        int curr = q.front(); q.pop();
+        if (curr == G) return visited[curr];
+        int nextPos[2] = { curr - D, curr + U };
+        
+        for (const int& next : nextPos) {
+            if (isSafe(next) and
+                not visited[next]) {
                 q.push(next);
-                visited(next) = visited(cur) + 1;
+                visited[next] = visited[curr] + 1;
             }
         }
     }
+    return -1;
+}
+
+int main(void) {
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
+    cin >> F >> S >> G >> U >> D;
+    int m = bfs();
+
+    if (m == -1) {
+        cout << "use the stairs" << endl;
+    } else {
+        cout << m - 1 << endl;
+    }
+
+
+    return 0;
 }
