@@ -1,97 +1,67 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
 #include <queue>
-#include <limits>
-#include <string>
-#define endl '\n'
+#include <cstring>
+#include <algorithm>
 using namespace std;
-typedef pair<int, int> point;
+#define endl '\n'
+#define ALL(x) (x).begin(), (x).end()
+#define REP(i, from, to) for (int i = (from); i < (to); i++)
+using point = pair<int, int>;
 
-point operator+(const point& p1, const point& p2) {
-    return point(p1.first + p2.first, p1.second + p2.second);
+string map[50];
+bool visited[50][50];
+int R, C;
+int m;
+point d[4] = { point(-1, 0), point(1, 0), point(0, -1), point(0, 1) };
+
+bool condition(const point& p) {
+    return 0 <= p.first and p.first < R and 0 <= p.second and p.second < C and
+        not visited[p.first][p.second] and
+        map[p.first][p.second] == 'L';
 }
 
-class Treasure {
-private:
-    enum { land = 'L', water = 'W'};
-    const point diff[4] = { point(-1, 0), point(1, 0), point(0, -1), point(0, 1) };
-    int row, col;
-    int ans = 0;
-    vector<vector<char>> map;
-    vector<vector<int>> visit;
+void bfs(const point& s) {
+    memset(visited, false, sizeof(visited));
+    queue<point> q;
+    q.push(s); visited[s.first][s.second] = true;
 
-    char& pos(const point& p) {
-        return map[p.first][p.second];
-    }
-    int& visited(const point& p) {
-        return visit[p.first][p.second];
-    }
-    bool isSafe(const point& p) {
-        return (unsigned)(p.first) < row and  (unsigned)(p.second) < col;
-    }
-
-    void input(void) {
-        cin >> row >> col; cin.ignore();
-        map = vector<vector<char>>(row, vector<char>(col));
-        for (auto& r : map) {
-            for (auto& c : r) {
-                c = cin.get();
-            }
-            cin.ignore();
-        }
-    }
-
-    void bfs(const point& p) {
-        visit = vector<vector<int>>(row, vector<int>(col));
-        queue<point> q; q.emplace(p); visited(p) = 1;
-        int res = 0;
-
-        while (not q.empty()) {
-            const point cur = q.front(); q.pop();
-            res = res < visited(cur) ? visited(cur) : res;
-
-            for (auto& d : diff) {
-                const point next(cur + d);
-                if (isSafe(next) and
-                    pos(next) == land and
-                    not visited(next)) {
-                    q.emplace(next);
-                    visited(next) = visited(cur) + 1;
+    int dist = 0;
+    while (not q.empty()) {
+        int qSize = q.size();
+        REP (i, 0, qSize) {
+            point curr = q.front(); q.pop();
+            for (const point& diff : d) {
+                point next = point(curr.first + diff.first, curr.second + diff.second);
+                if (condition(next)) {
+                    q.push(next);
+                    visited[next.first][next.second] = true;
                 }
             }
         }
-
-        ans = ans < res ? res : ans;
+        dist++;
     }
-
-    void calc(void) {
-        for (int r = 0; r < row; r++) {
-            for (int c = 0; c < col; c++) {
-                if (pos(point(r, c)) == land) {
-                    bfs(point(r, c));
-                }
-            }
-        }
-    }
-
-    void output(void) {
-        cout << ans - 1;
-    }
-public:
-    void solve(void) {
-        input();
-        calc();
-        output();
-    }
-
-};
+    m = max(m, dist);
+}
 
 int main(void) {
-    ios_base::sync_with_stdio(false);
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
+    cin >> R >> C;
+    
+    REP (r, 0, R) {
+        cin >> map[r];
+    }
 
-    Treasure t;
-    t.solve();
+    REP (r, 0, R) {
+        REP (c, 0, C) {
+            if (map[r][c] == 'L') {
+                bfs(point(r, c));
+            }
+        }
+    }
+    
+    cout << m - 1 << endl;
+
 
     return 0;
 }

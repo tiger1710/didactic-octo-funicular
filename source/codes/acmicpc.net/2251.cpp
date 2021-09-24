@@ -1,105 +1,37 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
-#include <queue>
-#include <limits>
-#include <string>
-#define endl '\n'
+#include <algorithm>
 using namespace std;
-typedef pair<int, int> point;
-class Calc;
+#define endl '\n'
+#define ALL(x) (x).begin(), (x).end()
+#define REP(i, from, to) for (int i = (from); i < (to); i++)
 
-class Bottle {
-private:
-    int volume[3];
-    int buket[3] = { 0, 0, 0 };
-
-    void input(void) {
-        for (int& i : volume) {
-            cin >> i;
-        }
-        buket[0] = buket[1] = 0;
-        buket[2] = volume[2];
-    }
-public:
-    friend Calc;
-    int Abuket(void) {
-        return buket[0];
-    }
-    int Cbuket(void) {
-        return buket[2];
-    }
-
-    void pour(const int& from, const int& to) {
-        if (volume[to] - buket[to] >= buket[from]) {
-            buket[to] += buket[from];
-            buket[from] = 0;
-        }
-        else {
-            buket[from] -= (volume[to] - buket[to]);
-            buket[to] = volume[to];
-        }
-    }
-
-    Bottle(void) {
-        input();
-    }
+template<int D, typename T>
+struct Vec : public vector<Vec<D - 1, T>> {
+  static_assert(D >= 1, "Vector dimension must be greater than zero!");
+  template<typename... Args>
+  Vec(int n = 0, Args... args) : vector<Vec<D - 1, T>>(n, Vec<D - 1, T>(args...)) {
+  }
+};
+template<typename T>
+struct Vec<1, T> : public vector<T> {
+  Vec(int n = 0, const T& val = T()) : vector<T>(n, val) {
+  }
 };
 
-class Calc{
-private:
-    Bottle start;
-    vector<vector<vector<bool>>> visit;
-    vector<int> ans;
+int A, B, C;
+vector<vector<vector<bool> > > visited;
 
-    vector<bool>::reference visited(const Bottle& b) {
-        return visit[b.buket[0]][b.buket[1]][b.buket[2]];
-    }
-    
+void dfs(const int& a, const int& b, const int& c) {
 
-    void init(void) {
-        visit = vector<vector<vector<bool>>>(201, vector<vector<bool>>(201, vector<bool>(201)));
-    }
-    void calc(void) {
-        queue<Bottle> q;
-        q.push(start); visited(start) = true;
-        ans.push_back(start.Cbuket());
-
-        while (not q.empty()) {
-            Bottle cur = q.front(); q.pop();
-            for (int from = 0; from < 3; from++) {
-                for (int to = 0; to < 3; to++) {
-                    if (from == to) continue;
-                    Bottle next = cur; next.pour(from, to);
-                    if (not visited(next)) {
-                        visited(next) = true;
-                        q.push(next);
-                        if (next.Abuket() == 0) ans.push_back(next.Cbuket());
-                    }
-                }
-            }
-        }
-    }
-    void output(void) {
-        sort(ans.begin(), ans.end());
-        ans.erase(unique(ans.begin(), ans.end()), ans.end());
-        for (int& i : ans) {
-            cout << i << ' ';
-        }
-    }
-public:
-    void solve(void) {
-        init();
-        calc();
-        output();
-    }
-};
+}
 
 int main(void) {
-    ios_base::sync_with_stdio(false);
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
+    cin >> A >> B >> C;
+    visited = vector<vector<vector<bool> > >(A, vector<vector<bool> >(B, vector<bool>(C, false)));
+    visited = vec<3, bool>(A, B, C, false);
 
-    Calc calc;
-    calc.solve();
 
     return 0;
 }

@@ -2,4 +2,4 @@
 *.out
 *.txt
 .vscode
-.dSYM
+*.dSYM

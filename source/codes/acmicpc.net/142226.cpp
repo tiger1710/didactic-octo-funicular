@@ -1,72 +1,59 @@
 #include <iostream>
-#include <algorithm>
-#include <functional>
 #include <vector>
 #include <queue>
-#include <limits>
-#include <unordered_map>
-#define endl '\n'
+#include <algorithm>
 using namespace std;
-typedef pair<int, int> point; //cnt, clipboard
+#define endl '\n'
+#define ALL(x) (x).begin(), (x).end()
+#define REP(i, from, to) for (int i = (from); i < (to); i++)
 
-struct point_hash {
-    size_t operator() (const point& p) const {
-        return hash<int>()(p.first) ^ hash<int>()(p.second);
-    }
-};
+using emoji = pair<int, int>;
+bool visited[2000][1001];
+int S;
 
-class Emoji {
-private:
-    int S, ans;
-    unordered_map<point, int, point_hash> visit;
+void input(void) {
+    cin >> S;
+}
 
-    point copy(const point& p) const { return point(p.first, p.first); };
-    point paste(const point& p) const { return point(p.first + p.second, p.second); }
-    point del(const point& p) const { return point(p.first - 1, p.second); }
-    function<point(const Emoji&, const point& p)> fp[3] = { &Emoji::copy, &Emoji::paste, &Emoji::del };
+int bfs(void) {
+    queue<emoji> q;
+    q.push(emoji(1, 0));
+    visited[1][0] = true;
 
-    bool visited(const point& p) { return visit.find(p) not_eq visit.end(); }
+    int minimum = 0;
+    while (not q.empty()) {
+        size_t size = q.size();
+        REP (i, 0, size) {
+            const emoji curr = q.front(); q.pop();
 
-    void input(void) { 
-        cin >> S;
-    }
-
-    void calc(void) {
-        queue<point> q;
-        q.push(point(1, 0));
-        visit[point(1, 0)] = 1;
-
-        while (not q.empty()) {
-            point cur = q.front(); q.pop();
-            if (cur.first == S) {
-                ans = visit[cur] - 1;
-                break;
+            if (curr.first == S) {
+                return minimum;
             }
-            for (auto& call : fp) {
-                point next = call(*this, cur);
-                if (next.first >= 0 and
-                    not visited(next)) {
-                    q.push(next); visit[next] = visit[cur] + 1;
+
+            emoji diff[3] = {
+                emoji(curr.first, curr.first),
+                emoji(curr.first + curr.second, curr.second),
+                emoji(curr.first - 1, curr.second)
+            };
+
+            for (const emoji& next : diff) {
+                if (0 < next.first and next.first < 2000 and
+                not visited[next.first][next.second]) {
+                    q.push(next);
+                    visited[next.first][next.second] = true;
                 }
             }
         }
+        minimum++;
     }
-    void output(void) {
-        cout << ans;
-    }
-public:
-    void solve(void) {
-        input();
-        calc();
-        output();
-    }
-};
+    return minimum;
+}
 
 int main(void) {
-    ios_base::sync_with_stdio(false);
-
-    Emoji e;
-    e.solve();
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
+    input();
+    int ans = bfs();
+    cout << ans << endl;
 
     return 0;
 }

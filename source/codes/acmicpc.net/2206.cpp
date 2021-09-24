@@ -1,88 +1,81 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#define endl '\n'
+#include <algorithm>
 using namespace std;
+#define endl '\n'
+#define ALL(x) (x).begin(), (x).end()
+#define REP(i, from, to) for (int i = (from); i < (to); i++)
 
-typedef pair<int, int> point;
-typedef pair<point, short> position;
+using point = tuple<int, int, char>;
 
-point operator+(const point& a, const point& b) { return point(a.first + b.first, a.second + b.second); }
-const point diff[4] = { point(-1, 0), point(1, 0), point(0, -1), point(0, 1) };
+vector<string> map;
+vector<vector<vector<int> > > visited;
+const int dr[4] = { 1, -1, 0, 0 };
+const int dc[4] = { 0, 0, -1, 1 };
+int N, M;
 
-class Move {
-private:
-    int N, M;
-    vector<vector<char>> map;
-    vector<vector<int>> visit[2];//[0]=not breaked, [1]=breaked
-
-    int& visited(const position& p) {
-        return visit[p.second][p.first.first][p.first.second];
+void input(void) {
+    cin >> N >> M;
+    map.resize(N);
+    visited = vector<vector<vector<int> > >(N, vector<vector<int> >(M, vector<int>(2, false)));
+    for (string& row : map) {
+        cin >> row;
     }
-    bool safe(const point& p) {
-        return (unsigned)(p.first) < N and (unsigned)(p.second) < M;
-    }
-    bool condition(const position& p) {
-        return safe(p.first) and not visited(p) and map[p.first.first][p.first.second] == 0;
-    }
-    bool break_condition(const position& p) {
-        return safe(p.first) and not visited(p);
-    }
+}
 
-    void input(void) {
-        (cin >> N >> M).ignore();
-        map = vector<vector<char>>(N, vector<char>(M));
-        visit[0] = visit[1] = vector<vector<int>>(N, vector<int>(M));
-        for (auto& r : map) {
-            for (char& c : r)
-                c = cin.get() - '0';
-            cin.ignore();
+bool condition(const point& p) {
+    int r, c; bool b; tie(r, c, b) = p;
+    return (0 <= r and r < N and 0 <= c and c < M) and
+        not visited[r][c][b] and map[r][c] == '0';
+}
+
+bool break_condition(const point& p) {
+    int r, c; bool b; tie(r, c, b) = p;
+    return (0 <= r and r < N and 0 <= c and c < M) and
+        not visited[r][c][1] and map[r][c] == '1';
+}
+
+int bfs(void) {
+    queue<point> q;
+    q.push(make_tuple(0, 0, 0));
+    visited[0][0][0] = 1;
+
+    while (not q.empty()) {
+        const point curr = q.front(); q.pop();
+        int r, c, b; tie(r, c, b) = curr;
+        if (r == N - 1 and c == M - 1) {
+            return visited[r][c][b];
         }
-    }
-    void calc(void) {
-        queue<position> q;
-        q.push(position(point(0, 0), 0));
-        visited(position(point(0, 0), 0)) = 1;
+        /*
+        cout << "r, c, b: " << r << ", " << c << ", " << b << endl;
+        cout << "visited[r][c][b]: " << visited[r][c][b] << endl;
+        */
 
-        while (not q.empty()) {
-            position cur = q.front(); q.pop();
+        REP (i, 0, 4) {
+            const int nextr = r + dr[i], nextc = c + dc[i], nextb = b;
 
-            for (const point& d : diff) {
-                position next(cur.first + d, cur.second);
-
-                if (condition(next)) {
-                    q.push(next); visited(next) = visited(cur) + 1;
-                }
-                if (not cur.second and break_condition(next)) {
-                    next.second = 1;
-                    q.push(next);
-                    visited(next) = visited(cur) + 1;
-                }
+            point next(nextr, nextc, nextb);
+            //cout << "nextr, nextc, nextb: " << nextr << ", " << nextc << ", " << nextb << endl;
+            if (condition(next)) {
+                q.push(next);
+                visited[nextr][nextc][nextb] = visited[r][c][b] + 1;
+            }
+            if (not nextb and break_condition(next)) {
+                q.push(point(nextr, nextc, 1));
+                visited[nextr][nextc][1] = visited[r][c][b] + 1;
             }
         }
     }
-    void output(void) {
-        const point fin(N - 1, M - 1);
-        int nb = visited(position(fin, false));
-        int b = visited(position(fin, true));
 
-        if (nb == 0 and b == 0) cout << -1;
-        else if (nb > 0 and b > 0) cout << min(nb, b);
-        else cout << max(nb, b);
-    }
-public:
-    void solve(void) {
-        input();
-        calc();
-        output();
-    }
-};
+    return -1;
+}
 
 int main(void) {
-    ios_base::sync_with_stdio(false);
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
 
-    Move m;
-    m.solve();
+    input();
+    cout << bfs() << endl;
 
     return 0;
 }

@@ -1,76 +1,64 @@
 #include <iostream>
 #include <vector>
 #include <deque>
+#include <algorithm>
 using namespace std;
-//https://justicehui.github.io/medium-algorithm/2018/08/30/01BFS/
-//https://justicehui.github.io/koi/2019/03/09/BOJ2665/ Âü°í
+#define endl '\n'
+#define ALL(x) (x).begin(), (x).end()
+#define REP(i, from, to) for (int i = (from); i < (to); i++)
+using point = pair<int, int>;
 
-typedef pair<int, int> point;
-point operator+(const point& a, const point& b) { return point(a.first + b.first, a.second + b.second); }
+int n;
+vector<string> room;
+vector<vector<int> > visited;
 
-class Makemaze {
-private:
-    enum { black, white };
-    const point diff[4] = { point(-1, 0), point(1, 0), point(0, -1), point(0, 1) };
-    point start, end;
-    int n;
-    vector<vector<char>> room;
-    vector<vector<int>> dist;
-
-    bool safe(const point& p) { return (unsigned)(p.first) < n and (unsigned)(p.second) < n; }
-    int& distance(const point& p) { return dist[p.first][p.second]; }
-    int cost(const point& p) { return room[p.first][p.second] ? 0 : 1; }
-
-    void input(void) {
-        (cin >> n).ignore();
-        room = vector<vector<char>>(n, vector<char>(n));
-        dist = vector<vector<int>>(n, vector<int>(n, 987654321));
-        for (auto& r : room) {
-            for (char& c : r)
-                c = cin.get() - '0';
-            cin.ignore();
-        }
-        start = point(0, 0); end = point(n - 1, n - 1);
+void input(void) {
+    cin >> n;
+    room.resize(n);
+    visited.resize(n, vector<int>(n, 0));
+    for (string& row : room) {
+        cin >> row;
     }
-    void calc(void) {
-        deque<point> q; q.push_back(start); distance(start) = 0;
-        while (not q.empty()) {
-            point cur = q.front(); q.pop_front();
+}
 
-            for (const point& d : diff) {
-                point next(cur + d);
-                if (safe(next) and 
-                    distance(next) > distance(cur) + cost(next)) {
-                    distance(next) = distance(cur) + cost(next);
-                    switch (cost(next)) {
-                    case 0:
-                        q.push_front(next);
-                        break;
-                    case 1:
-                        q.push_back(next);
-                        break;
-                    default:break;
-                    }
+bool condition(const point& p) {
+    return 0 <= p.first and p.first < n and
+        0 <= p.second and p.second < n and
+        not visited[p.first][p.second];
+}
+
+int bfs01(void) {
+    static const point diff[4] = {
+        point(-1, 0), point(1, 0),
+        point(0, -1), point(0, 1)
+    };
+
+    deque<point> q;
+    q.push_front(point(0, 0));
+    visited[0][0] = 1;
+
+    while (not q.empty()) {
+        const point curr(q.front()); q.pop_front();
+        for (const point& d : diff) {
+            const point next(curr.first + d.first, curr.second + d.second);
+            if (condition(next)) {
+                if (room[next.first][next.second] == '1') {
+                    visited[next.first][next.second] = visited[curr.first][curr.second];
+                    q.push_front(next);
+                } else {
+                    visited[next.first][next.second] = visited[curr.first][curr.second] + 1;
+                    q.push_back(next);
                 }
             }
         }
     }
-    void output(void) {
-        cout << distance(end);
-    }
-public:
-    void solve(void) {
-        input();
-        calc();
-        output();
-    }
-};
+    return visited[n - 1][n - 1] - 1;
+}
 
 int main(void) {
-    ios_base::sync_with_stdio(false);
-
-    Makemaze maze;
-    maze.solve();
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
+    input();
+    cout << bfs01() << endl;
 
     return 0;
 }

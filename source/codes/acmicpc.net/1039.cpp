@@ -1,77 +1,57 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
+#include <queue>
+#include <set>
+#include <unordered_set>
+#include <algorithm>
 using namespace std;
+#define endl '\n'
+#define ALL(x) (x).begin(), (x).end()
+#define REP(i, from, to) for (int i = (from); i < (to); i++)
 
-typedef pair<vector<int>, int> point;
+string N;
+int K;
 
-class hashing {
-public:
-    size_t operator()(const point& p) const {
-        return hash<string>()(string(p.first.begin(), p.first.end())) ^ hash<int>()(p.second);
-    }
-};
+int main(void) {
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
 
+    cin >> N >> K;
 
-class Swap {
-private:
-    vector<int> N;
-    int K;
-    unordered_map<point, bool, hashing> visit;
-    vector<int> ans, dummy;
-    int size;
+    queue<string> q;
+    q.push(N);
+    REP (i, 0, K) {
+        unordered_set<string> s;
+        const size_t qSize = q.size();
+        REP (size, 0, qSize) {
+            const string curr = q.front(); q.pop();
+            if (s.find(curr) not_eq s.end()) {
+                continue;
+            }
+            s.insert(curr);
 
-    bool visited(const point& val) {
-        return visit.find(val) not_eq visit.end();
-    }
-    void dfs(const point& cur) {
-        visit[cur] = true;
-        if (cur.second == K) {
-            ans = (ans < cur.first) ? (cur.first) : (ans);
-            return;
-        }
-        for(int i = 0; i < size; i++) {
-            for (auto j = i + 1; j < size; j++) {
-                point next(cur.first, cur.second + 1); swap(next.first[i], next.first[j]);
-                if (not visited(next) and next.first.front() not_eq 0) {
-                    dfs(next);
+            REP (u, 0, curr.size()) {
+                REP (v, u + 1, curr.size()) {
+                    string next(curr); swap(next[u], next[v]);
+                    if (next.front() not_eq '0') {
+                        q.push(next);
+                    }
                 }
             }
         }
     }
 
-    void input(void) {
-        char ch;
-        while ((ch = cin.get()) not_eq ' ') {
-            N.push_back(ch - '0');
-            ans.push_back(0); dummy.push_back(0);
-        }
-        cin >> K;
-        size = N.size();
-    }
-    void calc(void) {
-        dfs(point(N, 0));
-    }
-    void output(void) {
-        if (ans == dummy) {
-            cout << -1; return;
-        }
-        for (const int& i : ans) cout << i;
+    string ans("0");
+    while (not q.empty()) {
+        ans = max(ans, q.front());
+        q.pop();
     }
 
-public:
-    void solve(void) {
-        input();
-        calc();
-        output();
+    if (ans not_eq "0") {
+        cout << ans << endl;
+    } else {
+        cout << -1 << endl;
     }
-};
-
-int main(void) {
-    ios_base::sync_with_stdio(false); cin.tie(NULL);
-
-    Swap s;
-    s.solve();
+    
 
     return 0;
 }
