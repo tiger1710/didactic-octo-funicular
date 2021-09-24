@@ -57,7 +57,6 @@ void dfs(const int& curr) {
     visited[curr] = true;
 
     const rectangle& currRect = rect[curr];
-
     REP (i, 0, N + 1) {
         const rectangle& next = rect[i];
         if (not visited[i] and overlapped(currRect, next)) {
